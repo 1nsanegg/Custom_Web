@@ -1,4 +1,4 @@
-'use server';
+"use server";
 
 import { z } from "zod";
 import {
@@ -18,10 +18,11 @@ import {
 import { generateSalt, hashPassword } from "../core/passwordHasher";
 import { redirect } from "next/navigation";
 import { email } from "zod/v4";
-import { createUserSession } from "@/auth/core/session";
+import { createUserSession, removeUserFromSession } from "@/auth/core/session";
 import { cookies } from "next/headers";
 import { id } from "zod/v4/locales";
 import { UserRole } from "@/firebase/schemas";
+import { comparePasswords } from "../core/passwordHasher";
 
 export async function signUp(
   unsafeData: z.infer<typeof SignUpFormSchema>
@@ -64,10 +65,9 @@ export async function signUp(
       password: hashedPassword,
       salt,
       role: "user",
-    })
+    });
 
-
-    const user : {id: string, role: UserRole} = {
+    const user: { id: string; role: UserRole } = {
       id: docRef.id,
       role: "user",
     };
@@ -83,4 +83,60 @@ export async function signUp(
 
   redirect("/");
 }
-export async function signIn(unsafeData: z.infer<typeof SignInFormSchema>) {}
+export async function signIn(
+  unsafeData: z.infer<typeof SignInFormSchema>
+): Promise<FormState> {
+  const { success, data, error } = SignInFormSchema.safeParse(unsafeData);
+
+  if (!success) {
+    const formatted = error.format();
+    return {
+      errors: {
+        email: formatted.email?._errors,
+        password: formatted.password?._errors,
+      },
+      message: "Invalid login input.",
+    };
+  }
+
+  const userRef = collection(db, "user");
+  const q = query(userRef, where("email", "==", data.email));
+  const snapshot = await getDocs(q);
+
+  if (snapshot.empty) {
+    return {
+      errors: {
+        email: ["No account found for this email."],
+      },
+      message: "Login failed",
+    };
+  }
+
+  const userDoc = snapshot.docs[0];
+  const user = userDoc.data();
+
+  const isCorrectPassword = await comparePasswords({
+    hashedPassword: user.password,
+    password: data.password,
+    salt: user.salt,
+  });
+  if (!isCorrectPassword) {
+    return {
+      errors: {
+        password: ["Incorrect password."],
+      },
+      message: "Login failed",
+    };
+  }
+
+  const userForCreateSession: { id: string; role: UserRole } = {
+      id: userDoc.id,
+      role: "user",
+    };
+  await createUserSession(userForCreateSession, await cookies())
+  redirect("/");
+}
+export async function logOut() {
+  await removeUserFromSession(await cookies())
+  redirect("/signin")
+}
