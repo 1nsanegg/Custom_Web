@@ -1,10 +1,10 @@
 'use client';
-import { login } from '@/app/auth/login/actions';
+import { signIn } from "@/auth/nextjs/actions";
 import { useActionState } from "react";
 
 
 export default function LoginForm() {
-  const [state, loginAction] = useActionState(login, undefined)
+  const [state, loginAction] = useActionState(signIn, undefined)
   return (
     <form action={loginAction}>
       <div className="bg-blue-900 p-10 w-full max-w-sm space-y-4">
