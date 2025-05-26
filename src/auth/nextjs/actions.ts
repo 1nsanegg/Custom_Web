@@ -5,6 +5,8 @@ import {
   SignUpFormSchema,
   SignInFormSchema,
   FormState,
+  AddItemFormState,
+  addToDoItemSchema,
 } from "@/auth/nextjs/schemas";
 import { db } from "../../firebase/clientApp";
 import {
@@ -14,6 +16,10 @@ import {
   getDocs,
   query,
   where,
+  doc,
+  setDoc,
+  updateDoc,
+  deleteDoc
 } from "firebase/firestore";
 import { generateSalt, hashPassword } from "../core/passwordHasher";
 import { redirect } from "next/navigation";
@@ -23,6 +29,8 @@ import { cookies } from "next/headers";
 import { id } from "zod/v4/locales";
 import { UserRole } from "@/firebase/schemas";
 import { comparePasswords } from "../core/passwordHasher";
+import AddToDoItemForm from "@/ui/AddToDoItemForm";
+import { error } from "console";
 
 export async function signUp(
   unsafeData: z.infer<typeof SignUpFormSchema>
@@ -125,18 +133,154 @@ export async function signIn(
       errors: {
         password: ["Incorrect password."],
       },
+
       message: "Login failed",
     };
   }
 
   const userForCreateSession: { id: string; role: UserRole } = {
-      id: userDoc.id,
-      role: "user",
-    };
-  await createUserSession(userForCreateSession, await cookies())
-  redirect("/");
+    id: userDoc.id,
+    role: "user",
+  };
+  await createUserSession(userForCreateSession, await cookies());
+  redirect("/todos");
 }
 export async function logOut() {
-  await removeUserFromSession(await cookies())
-  redirect("/signin")
+  await removeUserFromSession(await cookies());
+  redirect("/signin");
+}
+
+export async function getAllToDos() {
+  try {
+    const todoRef = collection(db, "todo");
+    const snapshot = await getDocs(todoRef);
+
+    const todos = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    return todos;
+  } catch (error) {
+    console.error("Error getting all todos:", error);
+    return [];
+  }
+}
+
+export async function addTodoItem(
+  unsafeData: z.infer<typeof addToDoItemSchema>
+): Promise<AddItemFormState> {
+  const result = addToDoItemSchema.safeParse(unsafeData);
+
+  if (!result.success) {
+    const formatted = result.error.format();
+    return {
+      errors: {
+        name: formatted.name?._errors,
+        description: formatted.description?._errors,
+      },
+      message: "Invalid input.",
+    };
+  }
+  
+
+
+
+  const { name, description } = result.data;
+
+  const itemRef = collection(db, "todo");
+  const q = query(itemRef, where("name", "==", name));
+  const existingItem = await getDocs(q);
+  if(!existingItem.empty) {
+    return {
+      errors: {
+        name: ["This item already exists"],
+      },
+      message: "Items creation failed",
+    };
+  }
+
+  try {
+    const docRef = doc(collection(db, "todo"));
+    await setDoc(docRef, {
+      id: docRef.id,
+      name,
+      description,
+      createdAt: new Date().toISOString(),
+      done: false
+    });
+
+    console.log("Todo added with ID:", docRef.id);
+    return {
+      message: "Todo item added successfully!",
+    };
+  } catch (err) {
+    console.error("Error adding todo:", err);
+    return {
+      message: "Failed to add todo item.",
+    };
+  }
+}
+export async function getToDoById(id: string) {
+  const docRef = doc(db, "todo", id);
+  const docSnap = await getDoc(docRef);
+  if (!docSnap.exists()) return null;
+  return docSnap.data();
+}
+
+export async function updateTodoItem(
+  unsafeData : z.infer<typeof addToDoItemSchema> & {id : string} 
+): Promise <AddItemFormState> {
+
+  const {id, ...rest } = unsafeData 
+  const {success, data, error} = addToDoItemSchema.safeParse(rest)
+  if (!success) {
+    const formatted = error.format();
+    return {
+      errors: {
+        name: formatted.name?._errors,
+        description: formatted.description?._errors,
+      },
+      message: "Invalid form input",
+    };
+  }
+  const itemRef = doc(db, "todo", id);
+
+  try {
+    await setDoc(itemRef, {
+      id: id,
+      name: data.name,
+      description: data.description,
+      updatedAt: new Date().toISOString(),
+    });
+
+    return { message: "Updated successfully!" };
+  } catch (err) {
+    console.error("Update failed:", err);
+    return { message: "Update failed." };
+  }
+}
+
+export async function markTodoDone(id: string) {
+  const itemRef = doc(db, "todo", id);
+  await updateDoc(itemRef, {
+    done: true,
+    updatedAt: new Date().toISOString(),
+  });
+  return { message: "Marked as done!" };
+}
+
+export async function DeleteTodoItem(id: string) {
+  const itemRef = doc(db, "todo", id);
+
+  try {
+    await deleteDoc(itemRef);
+    return { message: "Deleted successfully!" };
+  } catch (error) {
+    console.error("Delete failed:", error);
+    return {
+      message: "Delete failed.",
+      error: error instanceof Error ? error.message : String(error),
+    };
+  }
 }
