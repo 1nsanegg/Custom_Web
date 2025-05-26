@@ -1,9 +1,14 @@
-'use client'
+"use client";
 
 import { logOut } from "@/auth/nextjs/actions";
 
-function Navbar() {
 
+type NavbarProps = {
+  user: { id: string; role: "admin" | "user" } | null;
+};
+
+function Navbar({ user }: NavbarProps) {
+  
 
   return (
     <div className="navbar">
@@ -27,11 +32,16 @@ function Navbar() {
           <li>
             <a>Contacts</a>
           </li>
-          <li> 
-              <button onClick={async () => await logOut()} className="btn btn-error btn-sm ml-4">
+          {user && (
+            <li>
+              <button
+                onClick={async () => await logOut()}
+                className="btn btn-error btn-sm ml-4"
+              >
                 Logout
               </button>
-          </li>
+            </li>
+          )}
         </ul>
       </div>
       <ul></ul>

@@ -4,16 +4,16 @@ export const SignUpFormSchema = z
   .object({
     username: z
       .string()
-      .min(2, { message: 'Name must be at least 2 characters long.' })
+      .min(2, { message: "Name must be at least 2 characters long." })
       .trim(),
-    email: z.string().email({ message: 'Please enter a valid email.' }).trim(),
+    email: z.string().email({ message: "Please enter a valid email." }).trim(),
     password: z
       .string()
-      .min(8, { message: 'Be at least 8 characters long' })
-      .regex(/[a-zA-Z]/, { message: 'Contain at least one letter.' })
-      .regex(/[0-9]/, { message: 'Contain at least one number.' })
+      .min(8, { message: "Be at least 8 characters long" })
+      .regex(/[a-zA-Z]/, { message: "Contain at least one letter." })
+      .regex(/[0-9]/, { message: "Contain at least one number." })
       .regex(/[^a-zA-Z0-9]/, {
-        message: 'Contain at least one special character.',
+        message: "Contain at least one special character.",
       })
       .trim(),
     confirmPassword: z
@@ -37,6 +37,17 @@ export const SignInFormSchema = z.object({
   password: z.string().min(1, { message: "Password field must not be empty." }),
 });
 
+export const addToDoItemSchema = z.object({
+  name: z
+    .string()
+    .min(2, { message: "Action must be at least 2 characters long." })
+    .trim(),
+  description: z
+    .string()
+    .min(2, { message: "Description must be at least 2 characters long." })
+    .trim(),
+  done: z.boolean().optional(),
+});
 export type FormState =
   | {
       errors?: {
@@ -44,6 +55,16 @@ export type FormState =
         email?: string[];
         password?: string[];
         confirmPassword?: string[];
+      };
+      message?: string;
+    }
+  | undefined;
+
+export type AddItemFormState =
+  | {
+      errors?: {
+        name?: string[];
+        description?: string[];
       };
       message?: string;
     }
