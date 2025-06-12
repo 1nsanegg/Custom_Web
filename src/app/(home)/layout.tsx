@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { PT_Sans} from "next/font/google";
-import "./globals.css";
+import "@/app/globals.css";
 import { getCurrentUser } from "@/auth/nextjs/currentUser";
 import Navbar from "@/ui/Navbar";
 

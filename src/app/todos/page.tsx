@@ -4,9 +4,8 @@ import React from 'react'
 
 const page = () => {
   return (
-    <div className="bg-base-100 shadow-sm text-[#42B9FC]">
+    <div className="bg-base-100 shadow-sm text-mexican-red-700">
         <ToDoList/>
-        
     </div>
   )
 }

@@ -1,7 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@100..900&display=swap');
 @import "tailwindcss";
 @plugin "daisyui";
 
 
 @theme {
-  --color-my-blue: #1F41A9,
+
+--font-montserrat: "Montserrat";
+
+--color-jacksons-purple-50: #e9f1ff;
+--color-jacksons-purple-100: #d7e6ff;
+--color-jacksons-purple-200: #b8d0ff;
+--color-jacksons-purple-300: #8db0ff;
+--color-jacksons-purple-400: #6081ff;
+--color-jacksons-purple-500: #3b54ff;
+--color-jacksons-purple-600: #1a23ff;
+--color-jacksons-purple-700: #0f15f3;
+--color-jacksons-purple-800: #1017c3;
+--color-jacksons-purple-900: #1821a0;
+--color-jacksons-purple-950: #0e1258;
+
+--color-mexican-red-50: #fef2f3;
+--color-mexican-red-100: #ffe1e3;
+--color-mexican-red-200: #ffc9cc;
+--color-mexican-red-300: #fea3a8;
+--color-mexican-red-400: #fc6d74;
+--color-mexican-red-500: #f43f48;
+--color-mexican-red-600: #e1212b;
+--color-mexican-red-700: #bd1820;
+--color-mexican-red-800: #a0181f;
+--color-mexican-red-900: #821a1f;
+--color-mexican-red-950: #47080b;
+
+--color-carnation-400: #ff6767;
+
+--color-geraldine-300: #ff9090;
+
 }
