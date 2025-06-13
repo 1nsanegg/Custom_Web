@@ -19,7 +19,7 @@ import {
   doc,
   setDoc,
   updateDoc,
-  deleteDoc
+  deleteDoc,
 } from "firebase/firestore";
 import { generateSalt, hashPassword } from "../core/passwordHasher";
 import { redirect } from "next/navigation";
@@ -143,7 +143,7 @@ export async function signIn(
     role: "user",
   };
   await createUserSession(userForCreateSession, await cookies());
-  redirect("/todos");
+  redirect("/dashboard");
 }
 export async function logOut() {
   await removeUserFromSession(await cookies());
@@ -182,16 +182,13 @@ export async function addTodoItem(
       message: "Invalid input.",
     };
   }
-  
-
-
 
   const { name, description } = result.data;
 
   const itemRef = collection(db, "todo");
   const q = query(itemRef, where("name", "==", name));
   const existingItem = await getDocs(q);
-  if(!existingItem.empty) {
+  if (!existingItem.empty) {
     return {
       errors: {
         name: ["This item already exists"],
@@ -207,7 +204,7 @@ export async function addTodoItem(
       name,
       description,
       createdAt: new Date().toISOString(),
-      done: false
+      done: false,
     });
 
     console.log("Todo added with ID:", docRef.id);
@@ -229,11 +226,10 @@ export async function getToDoById(id: string) {
 }
 
 export async function updateTodoItem(
-  unsafeData : z.infer<typeof addToDoItemSchema> & {id : string} 
-): Promise <AddItemFormState> {
-
-  const {id, ...rest } = unsafeData 
-  const {success, data, error} = addToDoItemSchema.safeParse(rest)
+  unsafeData: z.infer<typeof addToDoItemSchema> & { id: string }
+): Promise<AddItemFormState> {
+  const { id, ...rest } = unsafeData;
+  const { success, data, error } = addToDoItemSchema.safeParse(rest);
   if (!success) {
     const formatted = error.format();
     return {

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { PT_Sans} from "next/font/google";
 import "@/app/globals.css";
 import { getCurrentUser } from "@/auth/nextjs/currentUser";
-import Navbar from "@/ui/Navbar";
+
 
 
 const ptSans = PT_Sans({
@@ -28,7 +28,6 @@ export default async function RootLayout({
       <body
         className={`${ptSans.variable} antialiased bg-base-100 shadow-sm text-[#42B9FC]`} 
       >
-      <Navbar user = {user}></Navbar>
         {children}
       </body>
     </html>

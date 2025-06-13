@@ -1,4 +1,4 @@
-import Navbar from "@/ui/Navbar";
+
 import Body from "@/ui/Body";
 import InfoToggle from "@/ui/LoginButton";
 import { getCurrentUser } from "@/auth/nextjs/currentUser";

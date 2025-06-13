@@ -1,4 +1,4 @@
-import Navbar from '@/ui/Navbar'
+
 import ToDoList from '@/ui/ToDoList'
 import React from 'react'
 
