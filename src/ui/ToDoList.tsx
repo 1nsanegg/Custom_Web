@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Check, Pencil, Trash2 } from "lucide-react";
+import { Check, Pencil, Trash2, ClipboardList, Plus } from "lucide-react";
 import {
   DeleteTodoItem,
   getAllToDos,
@@ -11,6 +11,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { id } from "zod/v4/locales";
 import { useActionState } from "react";
+import TodoCard from '@/ui/TodoCard';
 
 const ToDoList = () => {
   const [todos, setTodos] = useState<any[]>([]);
@@ -56,9 +57,20 @@ const ToDoList = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mt-20 text-5xl">
-      <h1 className="text-3xl mb-6">To-Do List</h1>
-      {message && (
+    <div className="flex flex-col items-center mt-5 text-5xl border-1 rounded-2xl p-4">
+      <div className="relative w-full mb-10">
+        
+        <div className="absolute top-2 left-2 flex items-center">
+          <ClipboardList className="w-6 h-6"/>
+          <h1 className="text-sm">To-Do</h1>
+        </div>
+        <a href="" className="text-sm absolute top-2 right-2 flex items-center">
+          <Plus className="w-6 h-6"/>
+          Add tag</a>
+      </div>
+      <TodoCard/>
+      
+      {/* {message && (
         <div
           className={`alert shadow-lg mb-4 w-full max-w-xl text-sm ${
             message.startsWith("✅") ? "alert-success" : "alert-error"
@@ -67,7 +79,7 @@ const ToDoList = () => {
           {message}
         </div>
       )}
-      <ul className="list bg-base-100 rounded-box shadow-md p-4 space-y-2 w-full max-w-xl min-h-[100px] flex flex-col justify-center items-center">
+      <ul className="list bg-base-100 rounded-box shadow-md space-y-2 w-full max-w-xl min-h-[100px] flex flex-col justify-center items-center">
         {todos.length === 0 ? (
           <li className="text-center text-sm text-gray-400">No items yet</li>
         ) : (
@@ -132,7 +144,7 @@ const ToDoList = () => {
             </li>
           ))
         )}
-      </ul>
+      </ul> */}
 
       <div className="flex flex-col items-center mt-40">
         <a href="/todos/add">

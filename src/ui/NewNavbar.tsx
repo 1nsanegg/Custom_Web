@@ -18,7 +18,7 @@ const NewNavbar = () => {
           <input
             type="text"
             placeholder="Search"
-            className="input input-bordered pr-12 w-full rounded-[8px] bg-zircon-50"
+            className="input input-bordered pr-12 w-full rounded-[8px] bg-zircon-50 h-10"
           />
           <FontAwesomeIcon
             icon={faMagnifyingGlass}

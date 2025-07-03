@@ -1,6 +1,9 @@
+"use client";
+
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTableColumns, faGauge, faExclamation, faCheckSquare, faStream, faGear, faQuestion, faRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { logOut } from "@/auth/nextjs/actions";
 const Menu = () => {
   return (
     <div className="relative w-full mt-15">
@@ -53,7 +56,7 @@ const Menu = () => {
             </a>
           </li>
           <li className="mb-0">
-            <a className="flex items-center gap-4 text-white px-4 py-3 mt-20">
+            <a className="flex items-center gap-4 text-white px-4 py-3 mt-20" onClick={async () => await logOut() }>
               <FontAwesomeIcon icon={faRightFromBracket} className="text-xl h-6 w-6" />
               Logout
             </a>
