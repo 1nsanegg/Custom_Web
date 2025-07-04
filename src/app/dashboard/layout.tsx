@@ -11,7 +11,7 @@ export default function DashboardLayout({
     <html lang="en" className="overflow-hidden">
       <body className="font-montserrat overflow-hidden m-0 p-0 box-border">
         {/* Navbar - fixed top full width */}
-        <div className="fixed top-0 left-0 w-full z-50 h-[64px]">
+        <div className="fixed top-0 left-0 w-full z-50 h-16">
           <NewNavbar />
         </div>
 
