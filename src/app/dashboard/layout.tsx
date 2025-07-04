@@ -16,12 +16,12 @@ export default function DashboardLayout({
         </div>
 
         {/* Sidebar - fixed to the left below navbar */}
-        <div className="fixed top-[64px] left-0 w-1/4 h-[calc(100vh-64px)] z-40 overflow-hidden">
+        <div className="fixed top-[64px] left-0 w-1/5 h-[calc(100vh-64px)] z-40 overflow-hidden">
           <Menu />
         </div>
 
         {/* Main Content - scrollable, no overflow-x */}
-        <main className="absolute top-[64px] left-1/4 w-3/4 h-[calc(100vh-64px)] overflow-y-auto overflow-x-hidden bg-blue-50 ">
+        <main className="absolute top-[64px] left-1/5 w-4/5 h-[calc(100vh-64px)] overflow-y-auto overflow-x-hidden bg-blue-50 ">
           {children}
         </main>
       </body>
