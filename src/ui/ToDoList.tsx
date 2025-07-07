@@ -13,6 +13,8 @@ import { id } from "zod/v4/locales";
 import { useActionState } from "react";
 import TodoCard from '@/ui/TodoCard';
 
+
+
 const ToDoList = () => {
   const [todos, setTodos] = useState<any[]>([]);
   const router = useRouter();
@@ -28,6 +30,8 @@ const ToDoList = () => {
 
     fetchTodos();
   }, []);
+
+  
 
   const handleDelete = async (id: string) => {
     setDeletingId(id);
@@ -68,7 +72,17 @@ const ToDoList = () => {
           <Plus className="w-6 h-6"/>
           Add tag</a>
       </div>
-      <TodoCard/>
+      {todos.map((todo, index) => (
+        <TodoCard
+          key={index}
+          title={todo.title}
+          description={todo.description}
+          image={todo.image}
+          priority={todo.priority}
+          status={todo.status}
+          createdOn={todo.createdOn}
+        />
+      ))}
       
       {/* {message && (
         <div

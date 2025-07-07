@@ -257,6 +257,24 @@ export async function updateTodoItem(
   }
 }
 
+export async function updateTodoField(
+  id: string,
+  updates: Partial<{ priority: string; status: string }>
+) {
+  const itemRef = doc(db, "todo", id);
+  try {
+    await updateDoc(itemRef, {
+      ...updates,
+      updatedAt: new Date().toISOString(),
+    });
+    console.log("Todo updated successfully");
+  } catch (err) {
+    console.error("Failed to update todo:", err);
+    throw err;
+  }
+}
+
+
 export async function markTodoDone(id: string) {
   const itemRef = doc(db, "todo", id);
   await updateDoc(itemRef, {
