@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { updateTodoField } from "@/auth/nextjs/actions";
+import { useParams } from "next/navigation";
+import { getToDoById } from "@/auth/nextjs/actions";
 
-interface TodoCardProps {
+export interface TodoCardProps {
+  id: string,
   title: string;
   description: string;
   image: string;
@@ -11,6 +14,7 @@ interface TodoCardProps {
 }
 
 const TodoCard: React.FC<TodoCardProps> = ({
+  id,
   title,
   description,
   image,
@@ -18,6 +22,16 @@ const TodoCard: React.FC<TodoCardProps> = ({
   status: initialStatus,
   createdOn,
 }) => {
+
+  const [todoData, setTodoData] = useState<TodoCardProps | null>(null);
+
+  useEffect(() => {
+    const fetchTodo = async () => {
+      const data = await getToDoById(id);
+      setTodoData(data as TodoCardProps);
+    };
+    fetchTodo();
+  }, [id]);
   const [priority, setPriority] = useState(initialPriority);
   const [status, setStatus] = useState(initialStatus);
   const handlePriorityChange = async (newPriority: string) => {
@@ -64,7 +78,7 @@ const TodoCard: React.FC<TodoCardProps> = ({
             <select
               className="text-blue-500 text-xs border border-gray-300 rounded p-0.5"
               value={priority}
-              onChange={(e) => setPriority(e.target.value)}
+              onChange={(e) => handlePriorityChange(e.target.value)}
             >
               <option value="Low">Low</option>
               <option value="Moderate">Moderate</option>
@@ -76,7 +90,7 @@ const TodoCard: React.FC<TodoCardProps> = ({
             <select
               className="text-red-500 text-xs border border-gray-300 rounded p-0.5"
               value={status}
-              onChange={(e) => setStatus(e.target.value)}
+              onChange={(e) => handleStatusChange(e.target.value)}
             >
               <option value="Not Started">Not Started</option>
               <option value="In Progress">In Progress</option>

@@ -13,7 +13,7 @@ const EditToDoListForm = () => {
     async function fetchTodo() {
       const data = await getToDoById(id);
       if (data) {
-        setFormValues({ name: data.name, description: data.description });
+        setFormValues({ name: data.title, description: data.description });
       }
     }
     fetchTodo();

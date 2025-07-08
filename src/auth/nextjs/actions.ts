@@ -31,6 +31,7 @@ import { UserRole } from "@/firebase/schemas";
 import { comparePasswords } from "../core/passwordHasher";
 import AddToDoItemForm from "@/ui/AddToDoItemForm";
 import { error } from "console";
+import { TodoCardProps } from "@/ui/TodoCard";
 
 export async function signUp(
   unsafeData: z.infer<typeof SignUpFormSchema>
@@ -218,11 +219,15 @@ export async function addTodoItem(
     };
   }
 }
-export async function getToDoById(id: string) {
+export async function getToDoById(id: string): Promise<TodoCardProps | null> {
+  if (!id) {
+    console.warn("⚠️ getToDoById called with undefined id");
+    return null;
+  }
   const docRef = doc(db, "todo", id);
-  const docSnap = await getDoc(docRef);
-  if (!docSnap.exists()) return null;
-  return docSnap.data();
+  const snapshot = await getDoc(docRef);
+  if (!snapshot.exists()) return null;
+  return snapshot.data() as TodoCardProps;
 }
 
 export async function updateTodoItem(
@@ -273,7 +278,6 @@ export async function updateTodoField(
     throw err;
   }
 }
-
 
 export async function markTodoDone(id: string) {
   const itemRef = doc(db, "todo", id);

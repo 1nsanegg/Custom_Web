@@ -75,6 +75,7 @@ const ToDoList = () => {
       {todos.map((todo, index) => (
         <TodoCard
           key={index}
+          id={todo.id}
           title={todo.title}
           description={todo.description}
           image={todo.image}
