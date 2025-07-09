@@ -184,36 +184,41 @@ export async function addTodoItem(
     };
   }
 
-  const { name, description } = result.data;
+  const { name, description, priority, status, image } = result.data;
 
   const itemRef = collection(db, "todo");
   const q = query(itemRef, where("name", "==", name));
   const existingItem = await getDocs(q);
+
   if (!existingItem.empty) {
     return {
       errors: {
         name: ["This item already exists"],
       },
-      message: "Items creation failed",
+      message: "Item creation failed.",
     };
   }
 
   try {
-    const docRef = doc(collection(db, "todo"));
+    const docRef = doc(itemRef); // creates a new doc with auto ID
     await setDoc(docRef, {
       id: docRef.id,
       name,
       description,
-      createdAt: new Date().toISOString(),
+      priority: priority || "Low",
+      status: status || "Not Started",
+      image: image || "", // you can provide a default image here if needed
+      createdOn: new Date().toISOString(),
       done: false,
     });
 
-    console.log("Todo added with ID:", docRef.id);
+    console.log("✅ Todo added with ID:", docRef.id);
+
     return {
       message: "Todo item added successfully!",
     };
   } catch (err) {
-    console.error("Error adding todo:", err);
+    console.error("❌ Error adding todo:", err);
     return {
       message: "Failed to add todo item.",
     };

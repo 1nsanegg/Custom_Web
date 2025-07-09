@@ -3,6 +3,7 @@
 import React from "react";
 import { Check, Pencil, Trash2, ClipboardList, Plus } from "lucide-react";
 import {
+  addTodoItem,
   DeleteTodoItem,
   getAllToDos,
   markTodoDone,
@@ -11,66 +12,144 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { id } from "zod/v4/locales";
 import { useActionState } from "react";
-import TodoCard from '@/ui/TodoCard';
-
-
+import TodoCard, { TodoCardProps } from "@/ui/TodoCard";
 
 const ToDoList = () => {
-  const [todos, setTodos] = useState<any[]>([]);
-  const router = useRouter();
-  const [message, setMessage] = useState<string | null>(null);
-
+  const [todos, setTodos] = useState<TodoCardProps[]>([]);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [priority, setPriority] = useState("Low");
+  const [status, setStatus] = useState("Not Started");
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const router = useRouter();
   useEffect(() => {
     const fetchTodos = async () => {
-      const data = await getAllToDos();
-      console.log(data);
+      const data = await getAllToDos(); // this should return an array
       setTodos(data);
     };
 
     fetchTodos();
   }, []);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-  
+    const newTodo = {
+      title,
+      description,
+      priority,
+      status,
+      image: "", // or provide a default image URL
+      createdOn: new Date().toISOString(),
+    };
 
-  const handleDelete = async (id: string) => {
-    setDeletingId(id);
-    const res = await DeleteTodoItem(id);
+    try {
+      const createdId = await  (newTodo); // your function
+      setTodos((prev) => [...prev, { ...newTodo, id: createdId }]);
 
-    if (res.error) {
-      setMessage(` ${res.message}`);
-    } else {
-      setMessage(` ${res.message}`);
-      setTodos((prev) => prev.filter((todo) => todo.id !== id));
+      // Close modal and reset form
+      (document.getElementById("my_modal_5") as HTMLDialogElement)?.close();
+      setTitle("");
+      setDescription("");
+      setPriority("Low");
+      setStatus("Not Started");
+    } catch (err) {
+      console.error("❌ Failed to add todo:", err);
     }
-
-    setDeletingId(null);
-
-    // Optional: Clear the message after a few seconds
-    setTimeout(() => setMessage(null), 3000);
   };
-
-  const handleMarkAsDone = async (id: string) => {
-    const res = await markTodoDone(id);
-    setTodos((prev) =>
-      prev.map((todo) => (todo.id === id ? { ...todo, done: true } : todo))
-    );
-
-    setMessage(`${res.message}`);
-    setTimeout(() => setMessage(null), 3000);
-  };
-
   return (
     <div className="flex flex-col items-center mt-5 text-5xl border-1 rounded-2xl p-4">
       <div className="relative w-full mb-10">
-        
         <div className="absolute top-2 left-2 flex items-center">
-          <ClipboardList className="w-6 h-6"/>
+          <ClipboardList className="w-6 h-6" />
           <h1 className="text-sm">To-Do</h1>
         </div>
-        <a href="" className="text-sm absolute top-2 right-2 flex items-center">
-          <Plus className="w-6 h-6"/>
-          Add tag</a>
+        <button
+          className="btn"
+          onClick={() =>
+            (
+              document.getElementById("my_modal_5") as HTMLDialogElement
+            )?.showModal()
+          }
+        >
+          Add New Task
+        </button>
+
+        <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
+          <div className="modal-box">
+            <h3 className="font-bold text-lg">Add New Todo</h3>
+
+            <form
+              method="dialog"
+              onSubmit={handleSubmit}
+              className="space-y-4 mt-4"
+            >
+              <div>
+                <label className="label">
+                  <span className="label-text">Title</span>
+                </label>
+                <input
+                  type="text"
+                  className="input input-bordered w-full"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="label">
+                  <span className="label-text">Description</span>
+                </label>
+                <textarea
+                  className="textarea textarea-bordered w-full"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
+
+              <div className="flex gap-4">
+                <div className="flex-1">
+                  <label className="label">
+                    <span className="label-text">Priority</span>
+                  </label>
+                  <select
+                    className="select select-bordered w-full"
+                    value={priority}
+                    onChange={(e) => setPriority(e.target.value)}
+                  >
+                    <option value="Low">Low</option>
+                    <option value="Moderate">Moderate</option>
+                    <option value="High">High</option>
+                  </select>
+                </div>
+
+                <div className="flex-1">
+                  <label className="label">
+                    <span className="label-text">Status</span>
+                  </label>
+                  <select
+                    className="select select-bordered w-full"
+                    value={status}
+                    onChange={(e) => setStatus(e.target.value)}
+                  >
+                    <option value="Not Started">Not Started</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="modal-action">
+                <button type="submit" className="btn btn-primary">
+                  Save
+                </button>
+                <form method="dialog">
+                  <button className="btn">Cancel</button>
+                </form>
+              </div>
+            </form>
+          </div>
+        </dialog>
       </div>
       {todos.map((todo, index) => (
         <TodoCard
@@ -84,7 +163,7 @@ const ToDoList = () => {
           createdOn={todo.createdOn}
         />
       ))}
-      
+
       {/* {message && (
         <div
           className={`alert shadow-lg mb-4 w-full max-w-xl text-sm ${

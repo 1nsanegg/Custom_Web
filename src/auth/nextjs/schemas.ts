@@ -42,10 +42,22 @@ export const addToDoItemSchema = z.object({
     .string()
     .min(2, { message: "Action must be at least 2 characters long." })
     .trim(),
+
   description: z
     .string()
     .min(2, { message: "Description must be at least 2 characters long." })
     .trim(),
+
+  priority: z.enum(["Low", "Moderate", "High"], {
+    required_error: "Priority is required",
+  }),
+
+  status: z.enum(["Not Started", "In Progress", "Completed"], {
+    required_error: "Status is required",
+  }),
+
+  image: z.string().url().optional().or(z.literal("")),
+
   done: z.boolean().optional(),
 });
 export type FormState =
